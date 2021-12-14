@@ -1,5 +1,6 @@
 package com.example.catalogservice.service.impl;
 
+import com.example.catalogservice.client.EditInStock;
 import com.example.catalogservice.model.Book;
 import com.example.catalogservice.repository.BookRepository;
 import com.example.catalogservice.service.IBookService;
@@ -16,5 +17,20 @@ public class BookService implements IBookService {
 
     public List<Book> findAll() {
         return bookRepository.findAll();
+    }
+
+    @Override
+    public Book findById(int id) {
+        return bookRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void editInStock(EditInStock editInStock) {
+        Book found = findById(editInStock.getBookId());
+        if (found == null) {
+            // throw exception
+        }
+        found.setInStock(found.getInStock() - editInStock.getAmount());
+        bookRepository.save(found);
     }
 }
