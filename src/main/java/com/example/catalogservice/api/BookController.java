@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class BookController {
     BookMapper bookMapper;
 
     @GetMapping(value = "/all-books")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<BookDTO>> getAllBooks() {
         List<Book> books = bookService.findAll();
         return new ResponseEntity<>(bookMapper.toDTOList(books), HttpStatus.OK);

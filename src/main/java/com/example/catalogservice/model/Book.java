@@ -45,6 +45,9 @@ public class Book {
     @Column(name = "in_stock", nullable = false)
     private int inStock;
 
+    @Column(name = "price", nullable = false)
+    private double price;
+
     @ElementCollection(targetClass = Genre.class, fetch = FetchType.EAGER)
     @JoinTable(name = "genres", joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "genre", nullable = false)
@@ -52,5 +55,5 @@ public class Book {
     private Set<Genre> genres;
 
     @ManyToMany(mappedBy = "books")
-    Set<Writer> writers;
+    private Set<Writer> writers;
 }
