@@ -12,13 +12,6 @@ import java.util.Set;
 @Component
 public class WriterMapper {
 
-    @Autowired
-    BookMapper bookMapper;
-
-    public Writer toWriter(WriterDTO writerDTO) {
-        return null;
-    }
-
     public WriterDTO toWriterDTO(Writer writer) {
         return new WriterDTO(writer.getId(), writer.getName(), writer.getSurname(), writer.getBiography());
     }
@@ -29,9 +22,5 @@ public class WriterMapper {
             writerDTOList.add(toWriterDTO(writer));
         }
         return writerDTOList;
-    }
-
-    public Set<Writer> toWriterSet(List<WriterDTO> writerDTOList) {
-        return null;
     }
 }

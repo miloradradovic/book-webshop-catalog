@@ -23,8 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy
                         (SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/api/books/all-books").permitAll()
-                .antMatchers("/api/books/client/**").hasRole("USER")
+                .antMatchers("/api/books/**").hasRole("USER")
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(),

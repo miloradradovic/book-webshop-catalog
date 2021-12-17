@@ -1,6 +1,7 @@
 package com.example.catalogservice.service.impl;
 
 import com.example.catalogservice.client.EditInStock;
+import com.example.catalogservice.exception.BookNotFoundException;
 import com.example.catalogservice.model.Book;
 import com.example.catalogservice.repository.BookRepository;
 import com.example.catalogservice.service.IBookService;
@@ -28,7 +29,7 @@ public class BookService implements IBookService {
     public void editInStock(EditInStock editInStock) {
         Book found = findById(editInStock.getBookId());
         if (found == null) {
-            // throw exception
+            throw new BookNotFoundException();
         }
         found.setInStock(found.getInStock() - editInStock.getAmount());
         bookRepository.save(found);

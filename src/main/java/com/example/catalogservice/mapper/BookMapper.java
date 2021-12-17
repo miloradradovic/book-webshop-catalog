@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class BookMapper {
@@ -23,19 +22,11 @@ public class BookMapper {
                 genreMapper.toStringList(book.getGenres()), writerMapper.toWriterDTOList(book.getWriters()));
     }
 
-    public Book toBook(BookDTO bookDTO) {
-        return null;
-    }
-
     public List<BookDTO> toDTOList(List<Book> books) {
         List<BookDTO> bookDTOS = new ArrayList<>();
         for (Book book : books) {
             bookDTOS.add(toDTO(book));
         }
         return bookDTOS;
-    }
-
-    public Set<Book> toBookSet(List<Book> bookList) {
-        return null;
     }
 }
