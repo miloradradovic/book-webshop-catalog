@@ -1,6 +1,6 @@
 package com.example.catalogservice.security;
 
-import com.example.catalogservice.client.UserDetailsResponse;
+import com.example.catalogservice.feign.client.UserDetailsResponse;
 import com.example.catalogservice.feign.UserFeign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

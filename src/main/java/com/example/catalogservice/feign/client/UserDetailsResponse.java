@@ -1,4 +1,4 @@
-package com.example.catalogservice.client;
+package com.example.catalogservice.feign.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

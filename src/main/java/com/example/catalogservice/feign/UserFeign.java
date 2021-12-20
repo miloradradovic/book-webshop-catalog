@@ -1,6 +1,6 @@
 package com.example.catalogservice.feign;
 
-import com.example.catalogservice.client.UserDetailsResponse;
+import com.example.catalogservice.feign.client.UserDetailsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 

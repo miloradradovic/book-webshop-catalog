@@ -1,16 +1,17 @@
-package com.example.catalogservice.client;
+package com.example.catalogservice.feign.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class EditInStock {
+public class CartClient {
 
-    private int bookId;
-    private int amount;
+    private List<Integer> bookIds;
 }

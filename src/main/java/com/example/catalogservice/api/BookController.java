@@ -1,7 +1,9 @@
 package com.example.catalogservice.api;
 
-import com.example.catalogservice.client.EditInStock;
 import com.example.catalogservice.dto.BookDTO;
+import com.example.catalogservice.feign.client.BookCatalogData;
+import com.example.catalogservice.feign.client.CartClient;
+import com.example.catalogservice.feign.client.EditInStock;
 import com.example.catalogservice.mapper.BookMapper;
 import com.example.catalogservice.model.Book;
 import com.example.catalogservice.service.impl.BookService;
@@ -40,8 +42,12 @@ public class BookController {
 
     // will be called after the order is placed to reduce the in stock attribute
     @PutMapping(value = "/client/edit-in-stock")
-    public ResponseEntity<?> editInStock(@RequestBody EditInStock editInStock) {
+    public void editInStock(@RequestBody EditInStock editInStock) {
         bookService.editInStock(editInStock);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/client/get-book-data")
+    public List<BookCatalogData> getBookData(@RequestBody CartClient cart) {
+        return bookService.getBookDataForCart(cart);
     }
 }
