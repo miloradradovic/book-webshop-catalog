@@ -2,6 +2,7 @@ package com.example.catalogservice.security;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,6 +10,7 @@ import java.util.Collection;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class UserDetailsImpl implements UserDetails {
 
     private String username; // has to be username because of user details, but it is email

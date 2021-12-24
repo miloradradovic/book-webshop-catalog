@@ -7,6 +7,7 @@ import com.example.catalogservice.feign.client.EditInStock;
 import com.example.catalogservice.mapper.BookMapper;
 import com.example.catalogservice.model.Book;
 import com.example.catalogservice.service.impl.BookService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
