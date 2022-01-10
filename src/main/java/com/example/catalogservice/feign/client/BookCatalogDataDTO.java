@@ -1,20 +1,16 @@
-package com.example.catalogservice.dto;
+package com.example.catalogservice.feign.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class WriterDTO {
+public class BookCatalogDataDTO {
 
-    private int id;
     private String name;
-    private String surname;
-    private String biography;
+    private double price;
 }

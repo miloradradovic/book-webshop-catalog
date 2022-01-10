@@ -39,10 +39,9 @@ public class Writer {
     @Column(name = "biography", nullable = false)
     private String biography;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "writer_book",
-            joinColumns = @JoinColumn(name = "writer_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private Set<Book> books;
+    public Writer(String name, String surname, String biography) {
+        this.name = name;
+        this.surname = surname;
+        this.biography = biography;
+    }
 }

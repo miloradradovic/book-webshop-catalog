@@ -1,17 +1,15 @@
-package com.example.catalogservice.dto;
+package com.example.catalogservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class WriterDTO {
+public class ModifyWriter {
 
     private int id;
     private String name;

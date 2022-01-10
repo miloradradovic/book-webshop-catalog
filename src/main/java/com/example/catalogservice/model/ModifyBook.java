@@ -1,4 +1,4 @@
-package com.example.catalogservice.dto;
+package com.example.catalogservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,12 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class BookDTO {
+public class ModifyBook {
 
     private int id;
     private String name;
@@ -19,7 +20,6 @@ public class BookDTO {
     private String recap;
     private int inStock;
     private double price;
-    private List<String> genres;
-    private List<WriterDTO> writers;
-
+    private Set<Genre> genres;
+    private List<Integer> writerIds;
 }

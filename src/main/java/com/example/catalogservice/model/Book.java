@@ -5,19 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.ManyToMany;
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
+import javax.persistence.*;
 
 import java.util.Set;
 
@@ -54,6 +42,20 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private Set<Genre> genres;
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "writer_book",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "writer_id"))
     private Set<Writer> writers;
+
+    public Book(String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres, Set<Writer> writers) {
+        this.name = name;
+        this.yearReleased = yearReleased;
+        this.recap = recap;
+        this.inStock = inStock;
+        this.price = price;
+        this.genres = genres;
+        this.writers = writers;
+    }
 }

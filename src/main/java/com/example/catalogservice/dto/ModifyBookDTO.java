@@ -11,10 +11,14 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class WriterDTO {
+public class ModifyBookDTO {
 
     private int id;
     private String name;
-    private String surname;
-    private String biography;
+    private int yearReleased;
+    private String recap;
+    private int inStock;
+    private double price;
+    private List<String> genres;
+    private List<Integer> writerIds;
 }
