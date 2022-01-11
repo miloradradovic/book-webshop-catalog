@@ -112,8 +112,14 @@ public class BookService implements IBookService {
         exists.setName(toEdit.getName());
         exists.setPrice(toEdit.getPrice());
         exists.setRecap(toEdit.getRecap());
-        exists.setWriters(writers);
         exists.setYearReleased(toEdit.getYearReleased());
+        try {
+            Set<Writer> writersOld = exists.getWriters();
+            writerService.deleteWhereNoBooks(writersOld);
+            exists.setWriters(writers);
+        } catch (Exception e) {
+            throw new DeleteBookFailException();
+        }
         return bookRepository.save(exists);
     }
 
