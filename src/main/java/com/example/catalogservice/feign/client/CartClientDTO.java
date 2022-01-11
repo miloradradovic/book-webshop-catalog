@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @NoArgsConstructor
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 public class CartClientDTO {
 
+    @NotNull(message = "Book ids can't be null!")
     private List<Integer> bookIds;
 
     public CartClient toCartClient() {

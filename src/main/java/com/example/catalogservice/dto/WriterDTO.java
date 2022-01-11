@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +13,7 @@ import java.util.List;
 public class WriterDTO {
 
     private int id;
+
     private String name;
     private String surname;
     private String biography;

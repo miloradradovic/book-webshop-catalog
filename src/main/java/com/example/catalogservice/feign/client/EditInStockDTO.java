@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @NoArgsConstructor
@@ -13,6 +14,7 @@ import java.util.Map;
 @Setter
 public class EditInStockDTO {
 
+    @NotNull(message = "Amounts can't be null!")
     private Map<Integer, Integer> amounts;
 
     public EditInStock toEditInStock() {

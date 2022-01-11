@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -44,28 +45,28 @@ public class BookController {
     // will be called after the order is placed to reduce the in stock attribute
     @PutMapping(value = "/client/edit-in-stock")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public void editInStock(@RequestBody EditInStockDTO editInStock) {
+    public void editInStock(@RequestBody @Valid EditInStockDTO editInStock) {
         bookService.editInStock(editInStock.toEditInStock());
     }
 
     // will be called when order is being placed to get detailed book data
     @PostMapping(value = "/client/get-by-cart")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public List<BookCatalogDataDTO> getByCart(@RequestBody CartClientDTO cart) {
+    public List<BookCatalogDataDTO> getByCart(@RequestBody @Valid CartClientDTO cart) {
         List<BookCatalogData> bookCatalogData = bookService.getByCart(cart.toCartClient());
         return bookMapper.toBookCatalogDataDTOList(bookCatalogData);
     }
 
     @PostMapping(value = "/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BookDTO> create(@RequestBody ModifyBookDTO bookDTO) {
+    public ResponseEntity<BookDTO> create(@RequestBody @Valid ModifyBookDTO bookDTO) {
         Book created = bookService.create(bookMapper.toModifyBook(bookDTO));
         return new ResponseEntity<>(bookMapper.toBookDTO(created), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/edit/{bookId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<BookDTO> edit(@RequestBody ModifyBookDTO bookDTO, @PathVariable int bookId) {
+    public ResponseEntity<BookDTO> edit(@RequestBody @Valid ModifyBookDTO bookDTO, @PathVariable int bookId) {
         bookDTO.setId(bookId);
         Book edited = bookService.edit(bookMapper.toModifyBook(bookDTO));
         return new ResponseEntity<>(bookMapper.toBookDTO(edited), HttpStatus.OK);

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -40,14 +41,14 @@ public class WriterController {
 
     @PostMapping(value = "/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<WriterDTO> create(@RequestBody ModifyWriterDTO writerDTO) {
+    public ResponseEntity<WriterDTO> create(@RequestBody @Valid  ModifyWriterDTO writerDTO) {
         Writer created = writerService.create(writerMapper.toModifyWriter(writerDTO));
         return new ResponseEntity<>(writerMapper.toWriterDTO(created), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/edit/{writerId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<WriterDTO> edit(@RequestBody ModifyWriterDTO writerDTO, @PathVariable int writerId) {
+    public ResponseEntity<WriterDTO> edit(@RequestBody @Valid ModifyWriterDTO writerDTO, @PathVariable int writerId) {
         writerDTO.setId(writerId);
         Writer edited = writerService.edit(writerMapper.toModifyWriter(writerDTO));
         return new ResponseEntity<>(writerMapper.toWriterDTO(edited), HttpStatus.OK);
