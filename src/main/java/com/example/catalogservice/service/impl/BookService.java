@@ -104,7 +104,7 @@ public class BookService implements IBookService {
         }
         Set<Writer> writers = new HashSet<>();
         for (Integer writerId : toEdit.getWriterIds()) {
-            Writer writer = writerService.getById(writerId);
+            Writer writer = writerService.getByIdThrowsException(writerId);
             writers.add(writer);
         }
         exists.setInStock(toEdit.getInStock());

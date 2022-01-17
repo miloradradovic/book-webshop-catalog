@@ -42,7 +42,7 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private Set<Genre> genres;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "writer_book",
             joinColumns = @JoinColumn(name = "book_id"),

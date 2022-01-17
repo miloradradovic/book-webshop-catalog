@@ -28,7 +28,7 @@ public class BookController {
     BookMapper bookMapper;
 
     // returns the whole catalog
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_USER')")
     public ResponseEntity<List<BookDTO>> getAll() {
         List<Book> books = bookService.getAll();

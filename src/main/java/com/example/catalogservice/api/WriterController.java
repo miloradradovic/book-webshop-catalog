@@ -25,7 +25,7 @@ public class WriterController {
     @Autowired
     WriterMapper writerMapper;
 
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<WriterDTO>> getAll() {
         List<Writer> writers = writerService.getAll();
@@ -35,7 +35,7 @@ public class WriterController {
     @GetMapping(value = "/{writerId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<WriterDTO> getById(@PathVariable int writerId) {
-        Writer writer = writerService.getById(writerId);
+        Writer writer = writerService.getByIdThrowsException(writerId);
         return new ResponseEntity<>(writerMapper.toWriterDTO(writer), HttpStatus.OK);
     }
 
@@ -46,7 +46,7 @@ public class WriterController {
         return new ResponseEntity<>(writerMapper.toWriterDTO(created), HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/edit/{writerId}")
+    @PutMapping(value = "/{writerId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<WriterDTO> edit(@RequestBody @Valid ModifyWriterDTO writerDTO, @PathVariable int writerId) {
         writerDTO.setId(writerId);
