@@ -28,7 +28,7 @@ public class BookController {
     BookMapper bookMapper;
 
     // returns the whole catalog
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_USER')")
     public ResponseEntity<List<BookDTO>> getAll() {
         List<Book> books = bookService.getAll();
@@ -60,7 +60,7 @@ public class BookController {
     @PostMapping(value = "/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<BookDTO> create(@RequestBody @Valid ModifyBookDTO bookDTO) {
-        Book created = bookService.create(bookMapper.toModifyBook(bookDTO));
+        Book created = bookService.create(bookMapper.toBook(bookDTO), bookDTO.getWriterIds());
         return new ResponseEntity<>(bookMapper.toBookDTO(created), HttpStatus.CREATED);
     }
 
@@ -68,7 +68,7 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<BookDTO> edit(@RequestBody @Valid ModifyBookDTO bookDTO, @PathVariable int bookId) {
         bookDTO.setId(bookId);
-        Book edited = bookService.edit(bookMapper.toModifyBook(bookDTO));
+        Book edited = bookService.edit(bookMapper.toBook(bookDTO), bookDTO.getWriterIds());
         return new ResponseEntity<>(bookMapper.toBookDTO(edited), HttpStatus.OK);
     }
 

@@ -42,12 +42,31 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private Set<Genre> genres;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "writer_book",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "writer_id"))
     private Set<Writer> writers;
+
+    public Book(String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres) {
+        this.name = name;
+        this.yearReleased = yearReleased;
+        this.recap = recap;
+        this.inStock = inStock;
+        this.price = price;
+        this.genres = genres;
+    }
+
+    public Book(int id, String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres) {
+        this.id = id;
+        this.name = name;
+        this.yearReleased = yearReleased;
+        this.recap = recap;
+        this.inStock = inStock;
+        this.price = price;
+        this.genres = genres;
+    }
 
     public Book(String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres, Set<Writer> writers) {
         this.name = name;

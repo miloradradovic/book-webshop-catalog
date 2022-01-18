@@ -26,4 +26,10 @@ public class ModifyWriterDTO {
 
     @NotBlank(message = "Biography can't be blank")
     private String biography;
+
+    public ModifyWriterDTO(String name, String surname, String biography) {
+        this.name = name;
+        this.surname = surname;
+        this.biography = biography;
+    }
 }

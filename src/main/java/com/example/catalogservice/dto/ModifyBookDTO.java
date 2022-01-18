@@ -40,4 +40,14 @@ public class ModifyBookDTO {
     @NotNull(message = "Writers can't be null!")
     @Size(min = 1, message = "Please provide at least one writer!")
     private List<Integer> writerIds;
+
+    public ModifyBookDTO(String name, int yearReleased, String recap, int inStock, double price, List<String> genres, List<Integer> writerIds) {
+        this.name = name;
+        this.yearReleased = yearReleased;
+        this.recap = recap;
+        this.inStock = inStock;
+        this.price = price;
+        this.genres = genres;
+        this.writerIds = writerIds;
+    }
 }

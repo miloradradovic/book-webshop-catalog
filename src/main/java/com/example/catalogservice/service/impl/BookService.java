@@ -5,7 +5,6 @@ import com.example.catalogservice.feign.client.BookCatalogData;
 import com.example.catalogservice.feign.client.CartClient;
 import com.example.catalogservice.feign.client.EditInStock;
 import com.example.catalogservice.model.Book;
-import com.example.catalogservice.model.ModifyBook;
 import com.example.catalogservice.model.Writer;
 import com.example.catalogservice.repository.BookRepository;
 import com.example.catalogservice.service.IBookService;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Handler;
 
 @Service
 public class BookService implements IBookService {
@@ -35,7 +33,7 @@ public class BookService implements IBookService {
 
     @Override
     public Book getById(int id) {
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findById(id);
     }
 
     @Override
@@ -75,27 +73,24 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book create(ModifyBook toCreate) {
+    public Book create(Book toCreate, List<Integer> writerIds) {
         Book exists = bookRepository.findByNameAndRecap(toCreate.getName(), toCreate.getRecap());
         if (exists != null) {
             throw new BookAlreadyExistsException();
         }
         Set<Writer> writers = new HashSet<>();
-        for (Integer writerId : toCreate.getWriterIds()) {
+        for (Integer writerId : writerIds) {
             Writer writer = writerService.getByIdThrowsException(writerId);
             writers.add(writer);
         }
-        Book toCreateBook = new Book(toCreate.getName(), toCreate.getYearReleased(), toCreate.getRecap(), toCreate.getInStock(), toCreate.getPrice(),
-                toCreate.getGenres(), writers);
-        return bookRepository.save(toCreateBook);
+        toCreate.setWriters(writers);
+        return bookRepository.save(toCreate);
     }
 
     @Override
-    public Book edit(ModifyBook toEdit) {
-        Book exists = bookRepository.findById(toEdit.getId()).orElse(null);
-        if (exists == null) {
-            throw new BookNotFoundException();
-        }
+    public Book edit(Book toEdit, List<Integer> writerIds) {
+        Book exists = getByIdThrowsException(toEdit.getId());
+
         if (!exists.getName().equals(toEdit.getName()) && !exists.getRecap().equals(toEdit.getRecap())) {
             Book check = bookRepository.findByNameAndRecap(toEdit.getName(), toEdit.getRecap());
             if (check != null) {
@@ -103,8 +98,8 @@ public class BookService implements IBookService {
             }
         }
         Set<Writer> writers = new HashSet<>();
-        for (Integer writerId : toEdit.getWriterIds()) {
-            Writer writer = writerService.getById(writerId);
+        for (Integer writerId : writerIds) {
+            Writer writer = writerService.getByIdThrowsException(writerId);
             writers.add(writer);
         }
         exists.setInStock(toEdit.getInStock());

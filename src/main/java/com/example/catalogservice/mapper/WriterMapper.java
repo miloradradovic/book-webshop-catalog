@@ -2,9 +2,7 @@ package com.example.catalogservice.mapper;
 
 import com.example.catalogservice.dto.ModifyWriterDTO;
 import com.example.catalogservice.dto.WriterDTO;
-import com.example.catalogservice.model.ModifyWriter;
 import com.example.catalogservice.model.Writer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ public class WriterMapper {
         return writerDTOList;
     }
 
-    public ModifyWriter toModifyWriter(ModifyWriterDTO dto) {
-        return new ModifyWriter(dto.getId(), dto.getName(), dto.getSurname(), dto.getBiography());
+    public Writer toWriter(ModifyWriterDTO writerDTO) {
+        return new Writer(writerDTO.getId(), writerDTO.getName(), writerDTO.getSurname(), writerDTO.getBiography());
     }
 }

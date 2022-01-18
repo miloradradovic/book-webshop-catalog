@@ -3,14 +3,12 @@ package com.example.catalogservice.service.impl;
 import com.example.catalogservice.exception.DeleteWriterFailException;
 import com.example.catalogservice.exception.WriterAlreadyExistsException;
 import com.example.catalogservice.exception.WriterNotFoundException;
-import com.example.catalogservice.model.ModifyWriter;
 import com.example.catalogservice.model.Writer;
 import com.example.catalogservice.repository.WriterRepository;
 import com.example.catalogservice.service.IWriterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +23,7 @@ public class WriterService implements IWriterService {
 
     @Override
     public Writer getById(int writerId) {
-        return writerRepository.findById(writerId).orElse(null);
+        return writerRepository.findById(writerId);
     }
 
     @Override
@@ -43,21 +41,18 @@ public class WriterService implements IWriterService {
     }
 
     @Override
-    public Writer create(ModifyWriter toCreate) {
+    public Writer create(Writer toCreate) {
         Writer exists = writerRepository.findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography());
         if (exists != null) {
             throw new WriterAlreadyExistsException();
         }
-        Writer toCreateWriter = new Writer(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography());
-        return writerRepository.save(toCreateWriter);
+        return writerRepository.save(toCreate);
     }
 
     @Override
-    public Writer edit(ModifyWriter toEdit) {
-        Writer found = writerRepository.findById(toEdit.getId()).orElse(null);
-        if (found == null) {
-            throw new WriterNotFoundException();
-        }
+    public Writer edit(Writer toEdit) {
+        Writer found = getByIdThrowsException(toEdit.getId());
+
         if (!found.getName().equals(toEdit.getName()) && !found.getSurname().equals(toEdit.getSurname()) &&
                 !found.getBiography().equals(toEdit.getBiography())) {
             Writer exist = writerRepository.findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography());

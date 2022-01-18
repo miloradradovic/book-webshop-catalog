@@ -4,7 +4,6 @@ import com.example.catalogservice.feign.client.BookCatalogData;
 import com.example.catalogservice.feign.client.CartClient;
 import com.example.catalogservice.feign.client.EditInStock;
 import com.example.catalogservice.model.Book;
-import com.example.catalogservice.model.ModifyBook;
 
 import java.util.List;
 
@@ -15,8 +14,8 @@ public interface IBookService {
     Book getByIdThrowsException(int id);
     void editInStock(EditInStock editInStock);
     List<BookCatalogData> getByCart(CartClient cart);
-    Book create(ModifyBook toCreate);
-    Book edit(ModifyBook toEdit);
+    Book create(Book toCreate, List<Integer> writerIds);
+    Book edit(Book toEdit, List<Integer> writerIds);
     void delete(int bookId);
     void removeWriter(int writerId);
 }
