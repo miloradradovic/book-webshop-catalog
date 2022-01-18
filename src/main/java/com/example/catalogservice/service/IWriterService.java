@@ -1,6 +1,5 @@
 package com.example.catalogservice.service;
 
-import com.example.catalogservice.model.ModifyWriter;
 import com.example.catalogservice.model.Writer;
 
 import java.util.List;
@@ -11,7 +10,7 @@ public interface IWriterService {
     Writer getById(int writerId);
     Writer getByIdThrowsException(int writerId);
     List<Writer> getAll();
-    Writer create(ModifyWriter toCreate);
-    Writer edit(ModifyWriter toEdit);
+    Writer create(Writer toCreate);
+    Writer edit(Writer toEdit);
     void deleteWhereNoBooks(Set<Writer> writers);
 }

@@ -9,7 +9,6 @@ import com.example.catalogservice.feign.client.CartClientDTO;
 import com.example.catalogservice.feign.client.EditInStockDTO;
 import com.example.catalogservice.mapper.BookMapper;
 import com.example.catalogservice.model.Book;
-import com.example.catalogservice.model.ModifyBook;
 import com.example.catalogservice.security.UserDetailsImpl;
 import com.example.catalogservice.service.impl.BookService;
 import org.junit.Test;
@@ -156,12 +155,13 @@ public class BookControllerUnitTests {
     public void createSuccess() throws Exception {
         loginAdmin();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateCreateBookDTOSuccess();
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toCreate = ApiTestUtils.generateBookToCreate(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
-        Book created = ApiTestUtils.generateCreatedBook(modifyBook);
+        Book created = ApiTestUtils.generateCreatedBook(toCreate, writerIds);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.create(modifyBook)).willReturn(created);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toCreate);
+        given(bookService.create(toCreate, writerIds)).willReturn(created);
 
         mockMvc.perform(post(basePath + "/create")
                         .content(json)
@@ -174,11 +174,12 @@ public class BookControllerUnitTests {
     public void createFailNameAndRecap() throws Exception {
         loginAdmin();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateCreateBookDTOFailNameAndRecap();
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toCreate = ApiTestUtils.generateBookToCreate(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.create(modifyBook)).willThrow(BookAlreadyExistsException.class);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toCreate);
+        given(bookService.create(toCreate, writerIds)).willThrow(BookAlreadyExistsException.class);
 
         mockMvc.perform(post(basePath + "/create")
                         .content(json)
@@ -190,11 +191,12 @@ public class BookControllerUnitTests {
     public void createFailWriters() throws Exception {
         loginAdmin();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateCreateBookDTOFailWriters();
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toCreate = ApiTestUtils.generateBookToCreate(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.create(modifyBook)).willThrow(WriterNotFoundException.class);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toCreate);
+        given(bookService.create(toCreate, writerIds)).willThrow(WriterNotFoundException.class);
 
         mockMvc.perform(post(basePath + "/create")
                         .content(json)
@@ -209,12 +211,13 @@ public class BookControllerUnitTests {
         int editId = ApiTestUtils.generateValidBookId();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOSuccess();
         modifyBookDTO.setId(editId);
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
-        Book edited = ApiTestUtils.generateEditedBook(modifyBook);
+        Book edited = ApiTestUtils.generateEditedBook(toEdit, writerIds);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.edit(modifyBook)).willReturn(edited);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
+        given(bookService.edit(toEdit, writerIds)).willReturn(edited);
 
         mockMvc.perform(put(basePath + "/edit/" + editId)
                         .content(json)
@@ -231,11 +234,12 @@ public class BookControllerUnitTests {
         int editId = ApiTestUtils.generateValidBookId();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOFailNameAndRecap();
         modifyBookDTO.setId(editId);
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.edit(modifyBook)).willThrow(BookAlreadyExistsException.class);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
+        given(bookService.edit(toEdit, writerIds)).willThrow(BookAlreadyExistsException.class);
 
         mockMvc.perform(put(basePath + "/edit/" + editId)
                         .content(json)
@@ -250,11 +254,12 @@ public class BookControllerUnitTests {
         int editId = ApiTestUtils.generateValidBookId();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOFailWriters();
         modifyBookDTO.setId(editId);
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.edit(modifyBook)).willThrow(WriterNotFoundException.class);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
+        given(bookService.edit(toEdit, writerIds)).willThrow(WriterNotFoundException.class);
 
         mockMvc.perform(put(basePath + "/edit/" + editId)
                         .content(json)
@@ -269,11 +274,12 @@ public class BookControllerUnitTests {
         int editId = ApiTestUtils.generateInvalidBookId();
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOSuccess();
         modifyBookDTO.setId(editId);
-        ModifyBook modifyBook = ApiTestUtils.generateModifyBook(modifyBookDTO);
+        List<Integer> writerIds = modifyBookDTO.getWriterIds();
+        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
         String json = ApiTestUtils.json(modifyBookDTO);
 
-        given(bookMapper.toModifyBook(modifyBookDTO)).willReturn(modifyBook);
-        given(bookService.edit(modifyBook)).willThrow(BookNotFoundException.class);
+        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
+        given(bookService.edit(toEdit, writerIds)).willThrow(BookNotFoundException.class);
 
         mockMvc.perform(put(basePath + "/edit/" + editId)
                         .content(json)

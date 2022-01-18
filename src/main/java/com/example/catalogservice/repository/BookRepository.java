@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
     Book findByNameAndRecap(String name, String recap);
+    Book findById(int id);
 }

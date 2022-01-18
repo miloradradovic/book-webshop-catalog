@@ -26,7 +26,6 @@ public class ApiTestUtils {
         return mapper.writeValueAsString(obj);
     }
 
-
     public static UserDetailsImpl generateUserDetailsRoleUser() {
         List<String> roles = new ArrayList<>();
         roles.add("ROLE_USER");
@@ -65,14 +64,14 @@ public class ApiTestUtils {
         return 1;
     }
 
+    public static int generateInvalidBookId() {
+        return -1;
+    }
+
     public static Book generateBookFoundById(int bookId) {
         Book book = new Book();
         book.setId(bookId);
         return book;
-    }
-
-    public static int generateInvalidBookId() {
-        return -1;
     }
 
     public static EditInStockDTO generateEditInStockDTOSuccess() {
@@ -134,24 +133,15 @@ public class ApiTestUtils {
         return new ModifyBookDTO("Nameee", 2020, "Recap2", 15, 40.0, genres, writers);
     }
 
-    public static ModifyBook generateModifyBook(ModifyBookDTO modifyBookDTO) {
-        Set<Genre> genres = new HashSet<>();
-        for (String genre : modifyBookDTO.getGenres()) {
-            genres.add(Genre.valueOf(genre));
-        }
-        return new ModifyBook(modifyBookDTO.getId(), modifyBookDTO.getName(), modifyBookDTO.getYearReleased(), modifyBookDTO.getRecap(),
-                modifyBookDTO.getInStock(), modifyBookDTO.getPrice(), genres, modifyBookDTO.getWriterIds());
-    }
-
-    public static Book generateCreatedBook(ModifyBook modifyBook) {
+    public static Book generateCreatedBook(Book book, List<Integer> writerIds) {
         Set<Writer> writers = new HashSet<>();
-        for (Integer writerId : modifyBook.getWriterIds()) {
+        for (Integer writerId : writerIds) {
             Writer writer = new Writer();
             writer.setId(writerId);
             writers.add(writer);
         }
-        return new Book(2, modifyBook.getName(), modifyBook.getYearReleased(), modifyBook.getRecap(), modifyBook.getInStock(),
-                modifyBook.getPrice(), modifyBook.getGenres(), writers);
+        return new Book(2, book.getName(), book.getYearReleased(), book.getRecap(), book.getInStock(),
+                book.getPrice(), book.getGenres(), writers);
     }
 
     public static ModifyBookDTO generateEditBookDTOSuccess() {
@@ -162,15 +152,15 @@ public class ApiTestUtils {
         return new ModifyBookDTO("Nameee", 2020, "Recap2", 15, 40.0, genres, writers);
     }
 
-    public static Book generateEditedBook(ModifyBook modifyBook) {
+    public static Book generateEditedBook(Book book, List<Integer> writerIds) {
         Set<Writer> writers = new HashSet<>();
-        for (Integer writerId : modifyBook.getWriterIds()) {
+        for (Integer writerId : writerIds) {
             Writer writer = new Writer();
             writer.setId(writerId);
             writers.add(writer);
         }
-        return new Book(modifyBook.getId(), modifyBook.getName(), modifyBook.getYearReleased(), modifyBook.getRecap(), modifyBook.getInStock(),
-                modifyBook.getPrice(), modifyBook.getGenres(), writers);
+        return new Book(book.getId(), book.getName(), book.getYearReleased(), book.getRecap(), book.getInStock(),
+                book.getPrice(), book.getGenres(), writers);
     }
 
     public static ModifyBookDTO generateEditBookDTOFailNameAndRecap() {
@@ -222,11 +212,7 @@ public class ApiTestUtils {
         return new ModifyWriterDTO("Newwriter", "Newwriter", "Biographynew");
     }
 
-    public static ModifyWriter generateModifyWriter(ModifyWriterDTO modifyWriterDTO) {
-        return new ModifyWriter(modifyWriterDTO.getId(), modifyWriterDTO.getName(), modifyWriterDTO.getSurname(), modifyWriterDTO.getBiography());
-    }
-
-    public static Writer generateCreatedWriter(ModifyWriter modifyWriter) {
+    public static Writer generateCreatedWriter(Writer modifyWriter) {
         return new Writer(modifyWriter.getId(), modifyWriter.getName(), modifyWriter.getSurname(), modifyWriter.getBiography());
     }
 
@@ -238,11 +224,33 @@ public class ApiTestUtils {
         return new ModifyWriterDTO("Nameee", "Surnameee", "Biographyyy");
     }
 
-    public static Writer generateEditedWriter(ModifyWriter modifyWriter) {
+    public static Writer generateEditedWriter(Writer modifyWriter) {
         return new Writer(modifyWriter.getId(), modifyWriter.getName(), modifyWriter.getSurname(), modifyWriter.getBiography());
     }
 
     public static ModifyWriterDTO generateEditWriterDTOFail() {
         return new ModifyWriterDTO("Namee", "Surnamee", "Biographyy");
+    }
+
+    public static Writer generateWriterToCreate(ModifyWriterDTO modifyWriter) {
+        return new Writer(modifyWriter.getId(), modifyWriter.getName(), modifyWriter.getSurname(), modifyWriter.getBiography());
+    }
+
+    public static Writer generateWriterToEdit(ModifyWriterDTO modifyWriterDTO) {
+        return new Writer(modifyWriterDTO.getId(), modifyWriterDTO.getName(), modifyWriterDTO.getSurname(), modifyWriterDTO.getBiography());
+    }
+
+    public static Book generateBookToCreate(ModifyBookDTO modifyBookDTO) {
+        Set<Genre> genres = new HashSet<>();
+        genres.add(Genre.valueOf(modifyBookDTO.getGenres().get(0)));
+        return new Book(modifyBookDTO.getName(), modifyBookDTO.getYearReleased(), modifyBookDTO.getRecap(), modifyBookDTO.getInStock(),
+                modifyBookDTO.getPrice(), genres);
+    }
+
+    public static Book generateBookToEdit(ModifyBookDTO modifyBookDTO) {
+        Set<Genre> genres = new HashSet<>();
+        genres.add(Genre.valueOf(modifyBookDTO.getGenres().get(0)));
+        return new Book(modifyBookDTO.getId(), modifyBookDTO.getName(), modifyBookDTO.getYearReleased(), modifyBookDTO.getRecap(), modifyBookDTO.getInStock(),
+                modifyBookDTO.getPrice(), genres);
     }
 }

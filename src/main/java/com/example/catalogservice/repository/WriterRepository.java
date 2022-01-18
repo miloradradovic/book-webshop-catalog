@@ -12,4 +12,6 @@ public interface WriterRepository extends JpaRepository<Writer, Integer> {
 
     @Query(value = "SELECT count(writer_id) from writer_book where writer_id = :id", nativeQuery = true)
     int countBooks(int id);
+
+    Writer findById(int id);
 }

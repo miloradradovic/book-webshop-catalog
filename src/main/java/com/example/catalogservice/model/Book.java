@@ -49,6 +49,25 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "writer_id"))
     private Set<Writer> writers;
 
+    public Book(String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres) {
+        this.name = name;
+        this.yearReleased = yearReleased;
+        this.recap = recap;
+        this.inStock = inStock;
+        this.price = price;
+        this.genres = genres;
+    }
+
+    public Book(int id, String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres) {
+        this.id = id;
+        this.name = name;
+        this.yearReleased = yearReleased;
+        this.recap = recap;
+        this.inStock = inStock;
+        this.price = price;
+        this.genres = genres;
+    }
+
     public Book(String name, int yearReleased, String recap, int inStock, double price, Set<Genre> genres, Set<Writer> writers) {
         this.name = name;
         this.yearReleased = yearReleased;

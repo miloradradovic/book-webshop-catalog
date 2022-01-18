@@ -4,7 +4,6 @@ import com.example.catalogservice.dto.ModifyWriterDTO;
 import com.example.catalogservice.exception.WriterAlreadyExistsException;
 import com.example.catalogservice.exception.WriterNotFoundException;
 import com.example.catalogservice.mapper.WriterMapper;
-import com.example.catalogservice.model.ModifyWriter;
 import com.example.catalogservice.model.Writer;
 import com.example.catalogservice.security.UserDetailsImpl;
 import com.example.catalogservice.service.impl.WriterService;
@@ -96,11 +95,11 @@ public class WriterControllerUnitTests {
     public void createSuccess() throws Exception {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateCreateWriterDTOSuccess();
         String json = ApiTestUtils.json(modifyWriterDTO);
-        ModifyWriter modifyWriter = ApiTestUtils.generateModifyWriter(modifyWriterDTO);
-        Writer created = ApiTestUtils.generateCreatedWriter(modifyWriter);
+        Writer toCreate = ApiTestUtils.generateWriterToCreate(modifyWriterDTO);
+        Writer created = ApiTestUtils.generateCreatedWriter(toCreate);
 
-        given(writerMapper.toModifyWriter(modifyWriterDTO)).willReturn(modifyWriter);
-        given(writerService.create(modifyWriter)).willReturn(created);
+        given(writerMapper.toWriter(modifyWriterDTO)).willReturn(toCreate);
+        given(writerService.create(toCreate)).willReturn(created);
 
         mockMvc.perform(post(basePath + "/create")
                         .content(json)
@@ -116,10 +115,10 @@ public class WriterControllerUnitTests {
     public void createFail() throws Exception {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateCreateWriterDTOFail();
         String json = ApiTestUtils.json(modifyWriterDTO);
-        ModifyWriter modifyWriter = ApiTestUtils.generateModifyWriter(modifyWriterDTO);
+        Writer toCreate = ApiTestUtils.generateWriterToCreate(modifyWriterDTO);
 
-        given(writerMapper.toModifyWriter(modifyWriterDTO)).willReturn(modifyWriter);
-        given(writerService.create(modifyWriter)).willThrow(WriterAlreadyExistsException.class);
+        given(writerMapper.toWriter(modifyWriterDTO)).willReturn(toCreate);
+        given(writerService.create(toCreate)).willThrow(WriterAlreadyExistsException.class);
 
         mockMvc.perform(post(basePath + "/create")
                         .content(json)
@@ -134,11 +133,11 @@ public class WriterControllerUnitTests {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateEditWriterDTOSuccess();
         modifyWriterDTO.setId(writerId);
         String json = ApiTestUtils.json(modifyWriterDTO);
-        ModifyWriter modifyWriter = ApiTestUtils.generateModifyWriter(modifyWriterDTO);
-        Writer edited = ApiTestUtils.generateEditedWriter(modifyWriter);
+        Writer toEdit = ApiTestUtils.generateWriterToEdit(modifyWriterDTO);
+        Writer edited = ApiTestUtils.generateEditedWriter(toEdit);
 
-        given(writerMapper.toModifyWriter(modifyWriterDTO)).willReturn(modifyWriter);
-        given(writerService.edit(modifyWriter)).willReturn(edited);
+        given(writerMapper.toWriter(modifyWriterDTO)).willReturn(toEdit);
+        given(writerService.edit(toEdit)).willReturn(edited);
 
         mockMvc.perform(put(basePath + "/" + writerId)
                         .content(json)
@@ -155,10 +154,10 @@ public class WriterControllerUnitTests {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateEditWriterDTOFail();
         modifyWriterDTO.setId(writerId);
         String json = ApiTestUtils.json(modifyWriterDTO);
-        ModifyWriter modifyWriter = ApiTestUtils.generateModifyWriter(modifyWriterDTO);
+        Writer toEdit = ApiTestUtils.generateWriterToEdit(modifyWriterDTO);
 
-        given(writerMapper.toModifyWriter(modifyWriterDTO)).willReturn(modifyWriter);
-        given(writerService.edit(modifyWriter)).willThrow(WriterAlreadyExistsException.class);
+        given(writerMapper.toWriter(modifyWriterDTO)).willReturn(toEdit);
+        given(writerService.edit(toEdit)).willThrow(WriterAlreadyExistsException.class);
 
         mockMvc.perform(put(basePath + "/" + writerId)
                         .content(json)
@@ -172,10 +171,10 @@ public class WriterControllerUnitTests {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateEditWriterDTOSuccess();
         modifyWriterDTO.setId(writerId);
         String json = ApiTestUtils.json(modifyWriterDTO);
-        ModifyWriter modifyWriter = ApiTestUtils.generateModifyWriter(modifyWriterDTO);
+        Writer toEdit = ApiTestUtils.generateWriterToEdit(modifyWriterDTO);
 
-        given(writerMapper.toModifyWriter(modifyWriterDTO)).willReturn(modifyWriter);
-        given(writerService.edit(modifyWriter)).willThrow(WriterNotFoundException.class);
+        given(writerMapper.toWriter(modifyWriterDTO)).willReturn(toEdit);
+        given(writerService.edit(toEdit)).willThrow(WriterNotFoundException.class);
 
         mockMvc.perform(put(basePath + "/" + writerId)
                         .content(json)
