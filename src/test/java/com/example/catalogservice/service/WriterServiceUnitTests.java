@@ -3,34 +3,24 @@ package com.example.catalogservice.service;
 import com.example.catalogservice.exception.WriterAlreadyExistsException;
 import com.example.catalogservice.exception.WriterNotFoundException;
 import com.example.catalogservice.model.Writer;
-import com.example.catalogservice.repository.BookRepository;
 import com.example.catalogservice.repository.WriterRepository;
-import com.example.catalogservice.service.impl.BookService;
 import com.example.catalogservice.service.impl.WriterService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.annotation.PostConstruct;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.given;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WriterServiceUnitTests {
-
-    private MockMvc mockMvc;
 
     @InjectMocks
     private WriterService writerService;
@@ -38,62 +28,53 @@ public class WriterServiceUnitTests {
     @Mock
     private WriterRepository writerRepository;
 
-    @Mock
-    private BookService bookService;
-
-    @Mock
-    private BookRepository bookRepository;
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @PostConstruct
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.
-                webAppContextSetup(webApplicationContext).build();
-    }
-
     @Test
     public void getByIdSuccess() {
-        int writerId = ServiceTestUtils.generateValidWriterId();
-        Writer found = ServiceTestUtils.generateWriterFoundById(writerId);
+        int writerId = ServiceTestUtils.generateWriterId(true);
+        Writer found = ServiceTestUtils.generateWriterFoundBy(writerId, "", "", "");
 
-        given(writerRepository.findById(writerId)).willReturn(found);
+        when(writerRepository.findById(writerId)).thenReturn(found);
 
         Writer result = writerService.getById(writerId);
-        assertEquals(found.getId(), result.getId());
+        verify(writerRepository).findById(writerId);
+        verifyNoMoreInteractions(writerRepository);
+        assertEquals(writerId, result.getId());
     }
 
     @Test
     public void getByIdReturnsNull() {
-        int writerId = ServiceTestUtils.generateInvalidWriterId();
+        int writerId = ServiceTestUtils.generateWriterId(false);
 
-        given(writerRepository.findById(writerId)).willReturn(null);
+        when(writerRepository.findById(writerId)).thenReturn(null);
 
         Writer result = writerService.getById(writerId);
+        verify(writerRepository).findById(writerId);
+        verifyNoMoreInteractions(writerRepository);
         assertNull(result);
     }
 
     @Test
     public void getByIdThrowsExceptionSuccess() {
-        int writerId = ServiceTestUtils.generateValidWriterId();
-        Writer found = ServiceTestUtils.generateWriterFoundById(writerId);
+        int writerId = ServiceTestUtils.generateWriterId(true);
+        Writer found = ServiceTestUtils.generateWriterFoundBy(writerId, "", "", "");
 
-        given(writerRepository.findById(writerId)).willReturn(found);
-        given(writerService.getById(writerId)).willReturn(found);
+        when(writerRepository.findById(writerId)).thenReturn(found);
 
         Writer result = writerService.getByIdThrowsException(writerId);
-        assertEquals(found.getId(), result.getId());
+        verify(writerRepository).findById(writerId);
+        verifyNoMoreInteractions(writerRepository);
+        assertEquals(writerId, result.getId());
     }
 
     @Test(expected = WriterNotFoundException.class)
     public void getByIdThrowsExceptionFail() {
-        int writerId = ServiceTestUtils.generateInvalidWriterId();
+        int writerId = ServiceTestUtils.generateWriterId(false);
 
-        given(writerRepository.findById(writerId)).willReturn(null);
-        given(writerService.getById(writerId)).willReturn(null);
+        when(writerRepository.findById(writerId)).thenReturn(null);
 
         writerService.getByIdThrowsException(writerId);
+        verify(writerRepository).findById(writerId);
+        verifyNoMoreInteractions(writerRepository);
     }
 
     @Test
@@ -101,79 +82,85 @@ public class WriterServiceUnitTests {
         int listSize = ServiceTestUtils.generateWriterListSize();
         List<Writer> writers = ServiceTestUtils.generateWriterList(listSize);
 
-        given(writerRepository.findAll()).willReturn(writers);
+        when(writerRepository.findAll()).thenReturn(writers);
 
         List<Writer> result = writerService.getAll();
-        assertEquals(writers.size(), result.size());
+        verify(writerRepository).findAll();
+        verifyNoMoreInteractions(writerRepository);
+        assertEquals(listSize, result.size());
     }
 
     @Test
-    @Transactional
     public void createSuccess() {
-        Writer toCreate = ServiceTestUtils.generateWriterToCreateSuccess();
+        Writer toCreate = ServiceTestUtils.generateWriter("create", "");
         Writer created = ServiceTestUtils.generateCreatedWriter(toCreate);
-        int listSize = ServiceTestUtils.generateWriterListSize();
 
-        given(writerRepository.findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography())).willReturn(null);
-        given(writerRepository.save(toCreate)).willReturn(created);
+        when(writerRepository.findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography())).thenReturn(null);
+        when(writerRepository.save(toCreate)).thenReturn(created);
 
         Writer result = writerService.create(toCreate);
-        assertEquals(toCreate.getName(), result.getName());
-        assertEquals(toCreate.getSurname(), result.getSurname());
-        assertEquals(toCreate.getBiography(), result.getBiography());
-        assertTrue(result.getId() > listSize);
+        verify(writerRepository).findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography());
+        verify(writerRepository).save(toCreate);
+        verifyNoMoreInteractions(writerRepository);
+        assertEquals(created.getId(), result.getId());
     }
 
     @Test(expected = WriterAlreadyExistsException.class)
     public void createFail() {
-        Writer toCreate = ServiceTestUtils.generateWriterToCreateFail();
-        Writer found = ServiceTestUtils.generateWriterFoundByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography());
+        Writer toCreate = ServiceTestUtils.generateWriter("create", "namesurnamebiography");
+        Writer found = ServiceTestUtils.generateWriterFoundBy(0, toCreate.getName(), toCreate.getSurname(), toCreate.getBiography());
 
-        given(writerRepository.findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography())).willReturn(found);
+        when(writerRepository.findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography())).thenReturn(found);
 
         writerService.create(toCreate);
+        verify(writerRepository).findByNameAndSurnameAndBiography(toCreate.getName(), toCreate.getSurname(), toCreate.getBiography());
+        verifyNoMoreInteractions(writerRepository);
     }
 
     @Test
-    @Transactional
     public void editSuccess() {
-        Writer toEdit = ServiceTestUtils.generateWriterToEditSuccess();
-        Writer foundById = ServiceTestUtils.generateWriterFoundById(toEdit.getId());
-        Writer edited = ServiceTestUtils.generateEditedWriter(toEdit);
+        Writer toEdit = ServiceTestUtils.generateWriter("edit", "");
+        Writer foundById = ServiceTestUtils.generateWriterFoundBy(toEdit.getId(), "", "", "");
+        Writer edited = ServiceTestUtils.generateEditedWriter(foundById, toEdit);
 
-        given(writerService.getById(toEdit.getId())).willReturn(foundById);
-        given(writerService.getByIdThrowsException(toEdit.getId())).willReturn(foundById);
-        given(writerRepository.findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography())).willReturn(null);
-        given(writerRepository.save(foundById)).willReturn(edited);
+        when(writerRepository.findById(toEdit.getId())).thenReturn(foundById);
+        when(writerRepository.findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography())).thenReturn(null);
+        when(writerRepository.save(foundById)).thenReturn(edited);
 
         Writer result = writerService.edit(toEdit);
-        assertEquals(edited.getName(), result.getName());
+        verify(writerRepository).findById(toEdit.getId());
+        verify(writerRepository).findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography());
+        verify(writerRepository).save(foundById);
+        verifyNoMoreInteractions(writerRepository);
+        assertEquals(edited.getId(), result.getId());
         assertEquals(edited.getSurname(), result.getSurname());
+        assertEquals(edited.getName(), result.getName());
         assertEquals(edited.getBiography(), result.getBiography());
-
     }
 
     @Test(expected = WriterAlreadyExistsException.class)
     public void editFailWriterData() {
-        Writer toEdit = ServiceTestUtils.generateWriterToEditFailWriterData();
-        Writer foundById = ServiceTestUtils.generateWriterFoundById(toEdit.getId());
+        Writer toEdit = ServiceTestUtils.generateWriter("edit", "namesurnamebiography");
+        Writer foundById = ServiceTestUtils.generateWriterFoundBy(toEdit.getId(), "", "", "");
+        Writer foundByData = ServiceTestUtils.generateWriterFoundBy(0, toEdit.getName(), toEdit.getSurname(), toEdit.getBiography());
 
-        given(writerService.getById(toEdit.getId())).willReturn(foundById);
-        given(writerService.getByIdThrowsException(toEdit.getId())).willReturn(foundById);
-        given(writerRepository.findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography())).willReturn(foundById);
+        when(writerRepository.findById(toEdit.getId())).thenReturn(foundById);
+        when(writerRepository.findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography())).thenReturn(foundByData);
 
         writerService.edit(toEdit);
+        verify(writerRepository).findById(toEdit.getId());
+        verify(writerRepository).findByNameAndSurnameAndBiography(toEdit.getName(), toEdit.getSurname(), toEdit.getBiography());
+        verifyNoMoreInteractions(writerRepository);
     }
 
     @Test(expected = WriterNotFoundException.class)
     public void editFailId() {
-        int writerId = ServiceTestUtils.generateInvalidWriterId();
-        Writer toEdit = ServiceTestUtils.generateWriterToEditSuccess();
-        toEdit.setId(writerId);
+        Writer toEdit = ServiceTestUtils.generateWriter("edit", "id");
 
-        given(writerService.getById(toEdit.getId())).willReturn(null);
-        given(writerService.getByIdThrowsException(toEdit.getId())).willThrow(WriterNotFoundException.class);
+        when(writerRepository.findById(toEdit.getId())).thenReturn(null);
 
         writerService.edit(toEdit);
+        verify(writerRepository).findById(toEdit.getId());
+        verifyNoMoreInteractions(writerRepository);
     }
 }

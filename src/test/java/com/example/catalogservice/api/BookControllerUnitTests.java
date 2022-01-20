@@ -17,13 +17,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,6 +47,9 @@ public class BookControllerUnitTests {
         when(bookMapper.toBookDTOList(books)).thenReturn(booksDTO);
 
         ResponseEntity<List<BookDTO>> result = bookController.getAll();
+        verify(bookService).getAll();
+        verify(bookMapper).toBookDTOList(books);
+        verifyNoMoreInteractions(bookService, bookMapper);
         assertNotNull(result.getBody());
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(listSize, result.getBody().size());
@@ -63,6 +65,9 @@ public class BookControllerUnitTests {
         when(bookMapper.toBookDTO(found)).thenReturn(bookDTO);
 
         ResponseEntity<BookDTO> response = bookController.getById(bookId);
+        verify(bookService).getByIdThrowsException(bookId);
+        verify(bookMapper).toBookDTO(found);
+        verifyNoMoreInteractions(bookService, bookMapper);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(bookId, response.getBody().getId());
@@ -75,6 +80,8 @@ public class BookControllerUnitTests {
         when(bookService.getByIdThrowsException(bookId)).thenThrow(BookNotFoundException.class);
 
         bookController.getById(bookId);
+        verify(bookService).getByIdThrowsException(bookId);
+        verifyNoMoreInteractions(bookService);
     }
 
     @Test
@@ -89,6 +96,10 @@ public class BookControllerUnitTests {
         when(bookMapper.toBookCatalogDataDTOList(bookCatalogData)).thenReturn(bookCatalogDataDTO);
 
         List<BookCatalogDataDTO> result = bookController.getByCart(cartClientDTO);
+        verify(bookMapper).toCartClient(cartClientDTO);
+        verify(bookMapper).toBookCatalogDataDTOList(bookCatalogData);
+        verify(bookService).getByCart(cartClient);
+        verifyNoMoreInteractions(bookMapper, bookService);
         assertNotNull(result);
         assertEquals(bookCatalogDataDTO.size(), result.size());
     }
@@ -102,10 +113,12 @@ public class BookControllerUnitTests {
         when(bookService.getByCart(cartClient)).thenThrow(BookNotFoundException.class);
 
         bookController.getByCart(cartClientDTO);
+        verify(bookMapper).toCartClient(cartClientDTO);
+        verify(bookService).getByCart(cartClient);
+        verifyNoMoreInteractions(bookMapper, bookService);
     }
 
     @Test
-    @Transactional
     public void createSuccess() {
         ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("create", "");
         Book toCreate = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
@@ -117,6 +130,10 @@ public class BookControllerUnitTests {
         when(bookMapper.toBookDTO(created)).thenReturn(bookDTO);
 
         ResponseEntity<BookDTO> response = bookController.create(modifyBookDTO);
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookMapper).toBookDTO(created);
+        verify(bookService).create(toCreate, modifyBookDTO.getWriterIds());
+        verifyNoMoreInteractions(bookMapper, bookService);
         assertNotNull(response.getBody());
         assertEquals(201, response.getStatusCodeValue());
         assertEquals(created.getId(), response.getBody().getId());
@@ -131,6 +148,9 @@ public class BookControllerUnitTests {
         when(bookService.create(toCreate, modifyBookDTO.getWriterIds())).thenThrow(BookAlreadyExistsException.class);
 
         bookController.create(modifyBookDTO);
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookService).create(toCreate, modifyBookDTO.getWriterIds());
+        verifyNoMoreInteractions(bookMapper, bookService);
     }
 
     @Test(expected = WriterNotFoundException.class)
@@ -142,6 +162,9 @@ public class BookControllerUnitTests {
         when(bookService.create(toCreate, modifyBookDTO.getWriterIds())).thenThrow(WriterNotFoundException.class);
 
         bookController.create(modifyBookDTO);
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookService).create(toCreate, modifyBookDTO.getWriterIds());
+        verifyNoMoreInteractions(bookMapper, bookService);
     }
 
     @Test
@@ -156,6 +179,9 @@ public class BookControllerUnitTests {
         when(bookMapper.toBookDTO(edited)).thenReturn(bookDTO);
 
         ResponseEntity<BookDTO> response = bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookMapper).toBookDTO(edited);
+        verify(bookService).edit(toEdit, modifyBookDTO.getWriterIds());
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(edited.getName(), response.getBody().getName());
@@ -174,6 +200,8 @@ public class BookControllerUnitTests {
         when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenThrow(BookAlreadyExistsException.class);
 
         bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookService).edit(toEdit, modifyBookDTO.getWriterIds());
     }
 
     @Test(expected = WriterNotFoundException.class)
@@ -185,6 +213,8 @@ public class BookControllerUnitTests {
         when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenThrow(WriterNotFoundException.class);
 
         bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookService).edit(toEdit, modifyBookDTO.getWriterIds());
     }
 
     @Test(expected = BookNotFoundException.class)
@@ -196,16 +226,19 @@ public class BookControllerUnitTests {
         when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenThrow(BookNotFoundException.class);
 
         bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+        verify(bookMapper).toBook(modifyBookDTO);
+        verify(bookService).edit(toEdit, modifyBookDTO.getWriterIds());
     }
 
     @Test
-    @Transactional
     public void deleteSuccess() {
         int bookId = ApiTestUtils.generateBookId(true);
 
         when(bookService.delete(bookId)).thenReturn(true);
 
         ResponseEntity<?> response = bookController.delete(bookId);
+        verify(bookService).delete(bookId);
+        verifyNoMoreInteractions(bookService);
         assertEquals(200, response.getStatusCodeValue());
     }
 
@@ -216,10 +249,11 @@ public class BookControllerUnitTests {
         when(bookService.delete(bookId)).thenThrow(BookNotFoundException.class);
 
         bookController.delete(bookId);
+        verify(bookService).delete(bookId);
+        verifyNoMoreInteractions(bookService);
     }
 
     @Test
-    @Transactional
     public void editInStockSuccess() {
         EditInStockDTO editInStockDTO = ApiTestUtils.generateEditInStockDTO("");
         EditInStock editInStock = ApiTestUtils.generateEditInStock(editInStockDTO);

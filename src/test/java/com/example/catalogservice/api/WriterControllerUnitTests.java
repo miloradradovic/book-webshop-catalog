@@ -14,13 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -45,6 +44,9 @@ public class WriterControllerUnitTests {
         when(writerMapper.toWriterDTOList(writers)).thenReturn(writerDTOList);
 
         ResponseEntity<List<WriterDTO>> response = writerController.getAll();
+        verify(writerService).getAll();
+        verify(writerMapper).toWriterDTOList(writers);
+        verifyNoMoreInteractions(writerService, writerMapper);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(listSize, response.getBody().size());
@@ -60,6 +62,9 @@ public class WriterControllerUnitTests {
         when(writerMapper.toWriterDTO(found)).thenReturn(writerDTO);
 
         ResponseEntity<WriterDTO> response = writerController.getById(writerId);
+        verify(writerService).getByIdThrowsException(writerId);
+        verify(writerMapper).toWriterDTO(found);
+        verifyNoMoreInteractions(writerService, writerMapper);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(writerId, response.getBody().getId());
@@ -72,10 +77,11 @@ public class WriterControllerUnitTests {
         when(writerService.getByIdThrowsException(writerId)).thenThrow(WriterNotFoundException.class);
 
         writerController.getById(writerId);
+        verify(writerService).getByIdThrowsException(writerId);
+        verifyNoMoreInteractions(writerService);
     }
 
     @Test
-    @Transactional
     public void createSuccess() {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateModifyWriterDTO("create", "");
         Writer toCreate = ApiTestUtils.generateWriter(modifyWriterDTO);
@@ -87,6 +93,10 @@ public class WriterControllerUnitTests {
         when(writerMapper.toWriterDTO(created)).thenReturn(writerDTO);
 
         ResponseEntity<WriterDTO> response = writerController.create(modifyWriterDTO);
+        verify(writerMapper).toWriter(modifyWriterDTO);
+        verify(writerMapper).toWriterDTO(created);
+        verify(writerService).create(toCreate);
+        verifyNoMoreInteractions(writerMapper, writerService);
         assertNotNull(response.getBody());
         assertEquals(201, response.getStatusCodeValue());
         assertEquals(created.getId(), response.getBody().getId());
@@ -101,10 +111,12 @@ public class WriterControllerUnitTests {
         when(writerService.create(toCreate)).thenThrow(WriterAlreadyExistsException.class);
 
         writerController.create(modifyWriterDTO);
+        verify(writerMapper).toWriter(modifyWriterDTO);
+        verify(writerService).create(toCreate);
+        verifyNoMoreInteractions(writerMapper, writerService);
     }
 
     @Test
-    @Transactional
     public void editSuccess() {
         ModifyWriterDTO modifyWriterDTO = ApiTestUtils.generateModifyWriterDTO("edit", "");
         Writer toEdit = ApiTestUtils.generateWriter(modifyWriterDTO);
@@ -116,6 +128,10 @@ public class WriterControllerUnitTests {
         when(writerMapper.toWriterDTO(edited)).thenReturn(writerDTO);
 
         ResponseEntity<WriterDTO> response = writerController.edit(modifyWriterDTO, modifyWriterDTO.getId());
+        verify(writerMapper).toWriter(modifyWriterDTO);
+        verify(writerMapper).toWriterDTO(edited);
+        verify(writerService).edit(toEdit);
+        verifyNoMoreInteractions(writerMapper, writerService);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(writerDTO.getId(), response.getBody().getId());
@@ -133,6 +149,9 @@ public class WriterControllerUnitTests {
         when(writerService.edit(toEdit)).thenThrow(WriterAlreadyExistsException.class);
 
         writerController.edit(modifyWriterDTO, modifyWriterDTO.getId());
+        verify(writerMapper).toWriter(modifyWriterDTO);
+        verify(writerService).edit(toEdit);
+        verifyNoMoreInteractions(writerMapper, writerService);
     }
 
     @Test(expected = WriterNotFoundException.class)
@@ -144,5 +163,8 @@ public class WriterControllerUnitTests {
         when(writerService.edit(toEdit)).thenThrow(WriterNotFoundException.class);
 
         writerController.edit(modifyWriterDTO, modifyWriterDTO.getId());
+        verify(writerMapper).toWriter(modifyWriterDTO);
+        verify(writerService).edit(toEdit);
+        verifyNoMoreInteractions(writerMapper, writerService);
     }
 }
