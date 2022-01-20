@@ -45,15 +45,16 @@ public class BookController {
     // will be called after the order is placed to reduce the in stock attribute
     @PutMapping(value = "/client/edit-in-stock")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public void editInStock(@RequestBody @Valid EditInStockDTO editInStock) {
-        bookService.editInStock(editInStock.toEditInStock());
+    public ResponseEntity<?> editInStock(@RequestBody @Valid EditInStockDTO editInStock) {
+        bookService.editInStock(bookMapper.toEditInStock(editInStock));
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     // will be called when order is being placed to get detailed book data
     @PostMapping(value = "/client/get-by-cart")
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<BookCatalogDataDTO> getByCart(@RequestBody @Valid CartClientDTO cart) {
-        List<BookCatalogData> bookCatalogData = bookService.getByCart(cart.toCartClient());
+        List<BookCatalogData> bookCatalogData = bookService.getByCart(bookMapper.toCartClient(cart));
         return bookMapper.toBookCatalogDataDTOList(bookCatalogData);
     }
 

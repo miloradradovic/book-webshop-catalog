@@ -2,8 +2,7 @@ package com.example.catalogservice.mapper;
 
 import com.example.catalogservice.dto.BookDTO;
 import com.example.catalogservice.dto.ModifyBookDTO;
-import com.example.catalogservice.feign.client.BookCatalogData;
-import com.example.catalogservice.feign.client.BookCatalogDataDTO;
+import com.example.catalogservice.feign.client.*;
 import com.example.catalogservice.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -64,5 +63,13 @@ public class BookMapper {
     public Book toBook(ModifyBookDTO bookDTO) {
         return new Book(bookDTO.getId(), bookDTO.getName(), bookDTO.getYearReleased(), bookDTO.getRecap(), bookDTO.getInStock(),
                 bookDTO.getPrice(), genreMapper.toGenreSet(bookDTO.getGenres()));
+    }
+
+    public EditInStock toEditInStock(EditInStockDTO editInStockDTO) {
+        return new EditInStock(editInStockDTO.getAmounts());
+    }
+
+    public CartClient toCartClient(CartClientDTO cartClientDTO) {
+        return new CartClient(cartClientDTO.getBookIds());
     }
 }

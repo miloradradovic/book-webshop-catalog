@@ -12,5 +12,5 @@ public interface IWriterService {
     List<Writer> getAll();
     Writer create(Writer toCreate);
     Writer edit(Writer toEdit);
-    void deleteWhereNoBooks(Set<Writer> writers);
+    boolean deleteWhereNoBooks(Set<Writer> writers);
 }

@@ -47,7 +47,7 @@ public class BookService implements IBookService {
 
     @Override
     @Transactional
-    public void editInStock(EditInStock editInStock) {
+    public boolean editInStock(EditInStock editInStock) {
         List<Book> updatedBooks = new ArrayList<>();
         editInStock.getAmounts().forEach((id, amount) -> {
             Book found = getByIdThrowsException(id);
@@ -58,6 +58,7 @@ public class BookService implements IBookService {
             updatedBooks.add(found);
         });
         bookRepository.saveAll(updatedBooks);
+        return true;
     }
 
     @Override
@@ -119,12 +120,13 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public void delete(int bookId) {
+    public boolean delete(int bookId) {
         Book toDelete = getByIdThrowsException(bookId);
         Set<Writer> writers = toDelete.getWriters(); // will be checked after book is deleted
         try {
             bookRepository.delete(toDelete);
             writerService.deleteWhereNoBooks(writers);
+            return true;
         } catch (Exception e) {
             throw new DeleteBookFailException();
         }
@@ -132,7 +134,7 @@ public class BookService implements IBookService {
 
     @Transactional
     @Override
-    public void removeWriter(int writerId) {
+    public boolean removeWriter(int writerId) {
         List<Book> books = getAll();
         for (Book book : books) {
             book.getWriters().removeIf(writer -> writer.getId() == writerId);
@@ -142,5 +144,6 @@ public class BookService implements IBookService {
             }
         }
         bookRepository.saveAll(books);
+        return true;
     }
 }

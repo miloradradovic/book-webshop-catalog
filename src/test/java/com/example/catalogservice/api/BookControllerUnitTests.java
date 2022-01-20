@@ -1,318 +1,255 @@
 package com.example.catalogservice.api;
 
+import com.example.catalogservice.dto.BookDTO;
 import com.example.catalogservice.dto.ModifyBookDTO;
 import com.example.catalogservice.exception.BookAlreadyExistsException;
 import com.example.catalogservice.exception.BookNotFoundException;
+import com.example.catalogservice.exception.InStockFailException;
 import com.example.catalogservice.exception.WriterNotFoundException;
-import com.example.catalogservice.feign.client.BookCatalogData;
-import com.example.catalogservice.feign.client.CartClientDTO;
-import com.example.catalogservice.feign.client.EditInStockDTO;
+import com.example.catalogservice.feign.client.*;
 import com.example.catalogservice.mapper.BookMapper;
 import com.example.catalogservice.model.Book;
-import com.example.catalogservice.security.UserDetailsImpl;
 import com.example.catalogservice.service.impl.BookService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BookControllerUnitTests {
 
-    private MockMvc mockMvc;
-
-    @Mock
-    private BookMapper bookMapper;
+    @InjectMocks
+    private BookController bookController;
 
     @Mock
     private BookService bookService;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    private final String basePath = "/api/books";
-
-    @PostConstruct
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.
-                webAppContextSetup(webApplicationContext).build();
-    }
+    @Mock
+    private BookMapper bookMapper;
 
     @Test
-    public void getAllSuccess() throws Exception {
-        loginUser();
+    public void getAllSuccess() {
         int listSize = ApiTestUtils.generateBookListSize();
         List<Book> books = ApiTestUtils.generateBookList(listSize);
+        List<BookDTO> booksDTO = ApiTestUtils.generateBookDTOList(books);
 
-        given(bookService.getAll()).willReturn(books);
+        when(bookService.getAll()).thenReturn(books);
+        when(bookMapper.toBookDTOList(books)).thenReturn(booksDTO);
 
-        mockMvc.perform(get(basePath))
-                .andExpect(jsonPath("$", hasSize(listSize)))
-                .andExpect(status().isOk());
+        ResponseEntity<List<BookDTO>> result = bookController.getAll();
+        assertNotNull(result.getBody());
+        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(listSize, result.getBody().size());
     }
 
     @Test
-    public void getByIdSuccess() throws Exception {
-        loginUser();
-        int bookId = ApiTestUtils.generateValidBookId();
+    public void getByIdSuccess() {
+        int bookId = ApiTestUtils.generateBookId(true);
         Book found = ApiTestUtils.generateBookFoundById(bookId);
+        BookDTO bookDTO = ApiTestUtils.generateBookDTOFoundById(bookId);
 
-        given(bookService.getByIdThrowsException(bookId)).willReturn(found);
+        when(bookService.getByIdThrowsException(bookId)).thenReturn(found);
+        when(bookMapper.toBookDTO(found)).thenReturn(bookDTO);
 
-        mockMvc.perform(get(basePath + "/" + bookId))
-                .andExpect(jsonPath("$.id", is(bookId)))
-                .andExpect(status().isOk());
+        ResponseEntity<BookDTO> response = bookController.getById(bookId);
+        assertNotNull(response.getBody());
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(bookId, response.getBody().getId());
+    }
+
+    @Test(expected = BookNotFoundException.class)
+    public void getByIdFail() {
+        int bookId = ApiTestUtils.generateBookId(false);
+
+        when(bookService.getByIdThrowsException(bookId)).thenThrow(BookNotFoundException.class);
+
+        bookController.getById(bookId);
     }
 
     @Test
-    public void getByIdFail() throws Exception {
-        loginUser();
-        int bookId = ApiTestUtils.generateInvalidBookId();
-
-        given(bookService.getByIdThrowsException(bookId)).willThrow(BookNotFoundException.class);
-
-        mockMvc.perform(get(basePath + "/" + bookId))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Transactional
-    public void editInStockSuccess() throws Exception {
-        loginUser();
-        EditInStockDTO editInStockDTO = ApiTestUtils.generateEditInStockDTOSuccess();
-        String json = ApiTestUtils.json(editInStockDTO);
-
-        mockMvc.perform(put(basePath + "/client/edit-in-stock")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @Transactional
-    public void editInStockFail() throws Exception {
-        loginUser();
-        EditInStockDTO editInStockDTO = ApiTestUtils.generateEditInStockDTOFail();
-        String json = ApiTestUtils.json(editInStockDTO);
-
-        mockMvc.perform(put(basePath + "/client/edit-in-stock")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void getByCartSuccess() throws Exception {
-        loginUser();
-        CartClientDTO cartClientDTO = ApiTestUtils.generateCartClientDTOSuccess();
+    public void getByCartSuccess() {
+        CartClientDTO cartClientDTO = ApiTestUtils.generateCartClientDTO(true);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cartClientDTO);
         List<BookCatalogData> bookCatalogData = ApiTestUtils.generateBookCatalogData();
-        String json = ApiTestUtils.json(cartClientDTO);
+        List<BookCatalogDataDTO> bookCatalogDataDTO = ApiTestUtils.generateBookCatalogDataDTO(bookCatalogData);
 
-        given(bookService.getByCart(cartClientDTO.toCartClient())).willReturn(bookCatalogData);
+        when(bookMapper.toCartClient(cartClientDTO)).thenReturn(cartClient);
+        when(bookService.getByCart(cartClient)).thenReturn(bookCatalogData);
+        when(bookMapper.toBookCatalogDataDTOList(bookCatalogData)).thenReturn(bookCatalogDataDTO);
 
-        mockMvc.perform(post(basePath + "/client/get-by-cart")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(bookCatalogData.size())));
+        List<BookCatalogDataDTO> result = bookController.getByCart(cartClientDTO);
+        assertNotNull(result);
+        assertEquals(bookCatalogDataDTO.size(), result.size());
     }
 
-    @Test
-    public void getByCartFail() throws Exception {
-        loginUser();
-        CartClientDTO cartClientDTO = ApiTestUtils.generateCartClientDTOFail();
-        String json = ApiTestUtils.json(cartClientDTO);
+    @Test(expected = BookNotFoundException.class)
+    public void getByCartFail() {
+        CartClientDTO cartClientDTO = ApiTestUtils.generateCartClientDTO(false);
+        CartClient cartClient = ApiTestUtils.generateCartClient(cartClientDTO);
 
-        given(bookService.getByCart(cartClientDTO.toCartClient())).willThrow(BookNotFoundException.class);
+        when(bookMapper.toCartClient(cartClientDTO)).thenReturn(cartClient);
+        when(bookService.getByCart(cartClient)).thenThrow(BookNotFoundException.class);
 
-        mockMvc.perform(post(basePath + "/client/get-by-cart")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Transactional
-    public void createSuccess() throws Exception {
-        loginAdmin();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateCreateBookDTOSuccess();
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toCreate = ApiTestUtils.generateBookToCreate(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
-        Book created = ApiTestUtils.generateCreatedBook(toCreate, writerIds);
-
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toCreate);
-        given(bookService.create(toCreate, writerIds)).willReturn(created);
-
-        mockMvc.perform(post(basePath + "/create")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is(created.getName())));
-    }
-
-    @Test
-    public void createFailNameAndRecap() throws Exception {
-        loginAdmin();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateCreateBookDTOFailNameAndRecap();
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toCreate = ApiTestUtils.generateBookToCreate(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
-
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toCreate);
-        given(bookService.create(toCreate, writerIds)).willThrow(BookAlreadyExistsException.class);
-
-        mockMvc.perform(post(basePath + "/create")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void createFailWriters() throws Exception {
-        loginAdmin();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateCreateBookDTOFailWriters();
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toCreate = ApiTestUtils.generateBookToCreate(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
-
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toCreate);
-        given(bookService.create(toCreate, writerIds)).willThrow(WriterNotFoundException.class);
-
-        mockMvc.perform(post(basePath + "/create")
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        bookController.getByCart(cartClientDTO);
     }
 
     @Test
     @Transactional
-    public void editSuccess() throws Exception {
-        loginAdmin();
-        int editId = ApiTestUtils.generateValidBookId();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOSuccess();
-        modifyBookDTO.setId(editId);
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
-        Book edited = ApiTestUtils.generateEditedBook(toEdit, writerIds);
+    public void createSuccess() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("create", "");
+        Book toCreate = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+        Book created = ApiTestUtils.generateCreatedBook(toCreate);
+        BookDTO bookDTO = ApiTestUtils.generateBookDTO(created);
 
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
-        given(bookService.edit(toEdit, writerIds)).willReturn(edited);
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toCreate);
+        when(bookService.create(toCreate, modifyBookDTO.getWriterIds())).thenReturn(created);
+        when(bookMapper.toBookDTO(created)).thenReturn(bookDTO);
 
-        mockMvc.perform(put(basePath + "/edit/" + editId)
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(edited.getName())))
-                .andExpect(jsonPath("$.recap", is(edited.getRecap())));
+        ResponseEntity<BookDTO> response = bookController.create(modifyBookDTO);
+        assertNotNull(response.getBody());
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(created.getId(), response.getBody().getId());
+    }
+
+    @Test(expected = BookAlreadyExistsException.class)
+    public void createFailNameAndRecap() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("create", "nameandrecap");
+        Book toCreate = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toCreate);
+        when(bookService.create(toCreate, modifyBookDTO.getWriterIds())).thenThrow(BookAlreadyExistsException.class);
+
+        bookController.create(modifyBookDTO);
+    }
+
+    @Test(expected = WriterNotFoundException.class)
+    public void createFailWriters() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("create", "writers");
+        Book toCreate = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toCreate);
+        when(bookService.create(toCreate, modifyBookDTO.getWriterIds())).thenThrow(WriterNotFoundException.class);
+
+        bookController.create(modifyBookDTO);
+    }
+
+    @Test
+    public void editSuccess() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("edit", "");
+        Book toEdit = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+        Book edited = ApiTestUtils.generateEditedBook(toEdit);
+        BookDTO bookDTO = ApiTestUtils.generateBookDTO(edited);
+
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toEdit);
+        when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenReturn(edited);
+        when(bookMapper.toBookDTO(edited)).thenReturn(bookDTO);
+
+        ResponseEntity<BookDTO> response = bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+        assertNotNull(response.getBody());
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(edited.getName(), response.getBody().getName());
+        assertEquals(edited.getRecap(), response.getBody().getRecap());
+        assertEquals(edited.getPrice(), response.getBody().getPrice(), 0);
+        assertEquals(edited.getInStock(), response.getBody().getInStock());
+        assertEquals(edited.getYearReleased(), response.getBody().getYearReleased());
+    }
+
+    @Test(expected = BookAlreadyExistsException.class)
+    public void editFailNameAndRecap() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("edit", "nameandrecap");
+        Book toEdit = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toEdit);
+        when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenThrow(BookAlreadyExistsException.class);
+
+        bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+    }
+
+    @Test(expected = WriterNotFoundException.class)
+    public void editFailWriters() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("edit", "writers");
+        Book toEdit = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toEdit);
+        when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenThrow(WriterNotFoundException.class);
+
+        bookController.edit(modifyBookDTO, modifyBookDTO.getId());
+    }
+
+    @Test(expected = BookNotFoundException.class)
+    public void editFailId() {
+        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateModifyBookDTO("edit", "id");
+        Book toEdit = ApiTestUtils.generateBook(modifyBookDTO, modifyBookDTO.getWriterIds());
+
+        when(bookMapper.toBook(modifyBookDTO)).thenReturn(toEdit);
+        when(bookService.edit(toEdit, modifyBookDTO.getWriterIds())).thenThrow(BookNotFoundException.class);
+
+        bookController.edit(modifyBookDTO, modifyBookDTO.getId());
     }
 
     @Test
     @Transactional
-    public void editFailNameAndRecap() throws Exception {
-        loginAdmin();
-        int editId = ApiTestUtils.generateValidBookId();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOFailNameAndRecap();
-        modifyBookDTO.setId(editId);
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
+    public void deleteSuccess() {
+        int bookId = ApiTestUtils.generateBookId(true);
 
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
-        given(bookService.edit(toEdit, writerIds)).willThrow(BookAlreadyExistsException.class);
+        when(bookService.delete(bookId)).thenReturn(true);
 
-        mockMvc.perform(put(basePath + "/edit/" + editId)
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        ResponseEntity<?> response = bookController.delete(bookId);
+        assertEquals(200, response.getStatusCodeValue());
+    }
+
+    @Test(expected = BookNotFoundException.class)
+    public void deleteFail() {
+        int bookId = ApiTestUtils.generateBookId(false);
+
+        when(bookService.delete(bookId)).thenThrow(BookNotFoundException.class);
+
+        bookController.delete(bookId);
     }
 
     @Test
     @Transactional
-    public void editFailWriters() throws Exception {
-        loginAdmin();
-        int editId = ApiTestUtils.generateValidBookId();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOFailWriters();
-        modifyBookDTO.setId(editId);
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
+    public void editInStockSuccess() {
+        EditInStockDTO editInStockDTO = ApiTestUtils.generateEditInStockDTO("");
+        EditInStock editInStock = ApiTestUtils.generateEditInStock(editInStockDTO);
 
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
-        given(bookService.edit(toEdit, writerIds)).willThrow(WriterNotFoundException.class);
+        when(bookMapper.toEditInStock(editInStockDTO)).thenReturn(editInStock);
+        when(bookService.editInStock(editInStock)).thenReturn(true);
 
-        mockMvc.perform(put(basePath + "/edit/" + editId)
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        ResponseEntity<?> response = bookController.editInStock(editInStockDTO);
+        assertEquals(200, response.getStatusCodeValue());
     }
 
-    @Test
-    @Transactional
-    public void editFailId() throws Exception {
-        loginAdmin();
-        int editId = ApiTestUtils.generateInvalidBookId();
-        ModifyBookDTO modifyBookDTO = ApiTestUtils.generateEditBookDTOSuccess();
-        modifyBookDTO.setId(editId);
-        List<Integer> writerIds = modifyBookDTO.getWriterIds();
-        Book toEdit = ApiTestUtils.generateBookToEdit(modifyBookDTO);
-        String json = ApiTestUtils.json(modifyBookDTO);
+    @Test(expected = BookNotFoundException.class)
+    public void editInStockFailId() {
+        EditInStockDTO editInStockDTO = ApiTestUtils.generateEditInStockDTO("id");
+        EditInStock editInStock = ApiTestUtils.generateEditInStock(editInStockDTO);
 
-        given(bookMapper.toBook(modifyBookDTO)).willReturn(toEdit);
-        given(bookService.edit(toEdit, writerIds)).willThrow(BookNotFoundException.class);
+        when(bookMapper.toEditInStock(editInStockDTO)).thenReturn(editInStock);
+        when(bookService.editInStock(editInStock)).thenThrow(BookNotFoundException.class);
 
-        mockMvc.perform(put(basePath + "/edit/" + editId)
-                        .content(json)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+        bookController.editInStock(editInStockDTO);
     }
 
-    @Test
-    @Transactional
-    public void deleteSuccess() throws Exception {
-        loginAdmin();
-        int bookId = ApiTestUtils.generateValidBookId();
+    @Test(expected = InStockFailException.class)
+    public void editInStockFailAmounts() {
+        EditInStockDTO editInStockDTO = ApiTestUtils.generateEditInStockDTO("amounts");
+        EditInStock editInStock = ApiTestUtils.generateEditInStock(editInStockDTO);
 
-        mockMvc.perform(delete(basePath + "/" + bookId))
-                .andExpect(status().isOk());
-    }
+        when(bookMapper.toEditInStock(editInStockDTO)).thenReturn(editInStock);
+        when(bookService.editInStock(editInStock)).thenThrow(InStockFailException.class);
 
-    @Test
-    public void deleteFail() throws Exception {
-        loginAdmin();
-        int bookId = ApiTestUtils.generateInvalidBookId();
-
-        mockMvc.perform(delete(basePath + "/" + bookId))
-                .andExpect(status().isBadRequest());
-    }
-
-    private void loginUser() {
-        UserDetailsImpl user = ApiTestUtils.generateUserDetailsRoleUser();
-        SecurityContextHolder.getContext().setAuthentication(ApiTestUtils.generateAuthentication(user));
-    }
-
-    private void loginAdmin() {
-        UserDetailsImpl user = ApiTestUtils.generateUserDetailsRoleAdmin();
-        SecurityContextHolder.getContext().setAuthentication(ApiTestUtils.generateAuthentication(user));
+        bookController.editInStock(editInStockDTO);
     }
 }

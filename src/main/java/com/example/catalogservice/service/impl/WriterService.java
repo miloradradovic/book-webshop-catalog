@@ -18,9 +18,6 @@ public class WriterService implements IWriterService {
     @Autowired
     WriterRepository writerRepository;
 
-    @Autowired
-    BookService bookService;
-
     @Override
     public Writer getById(int writerId) {
         return writerRepository.findById(writerId);
@@ -67,13 +64,14 @@ public class WriterService implements IWriterService {
     }
 
     @Override
-    public void deleteWhereNoBooks(Set<Writer> writers) {
+    public boolean deleteWhereNoBooks(Set<Writer> writers) {
         try {
             for (Writer writer : writers) {
                 if (writerRepository.countBooks(writer.getId()) == 0) {
                     writerRepository.delete(writer);
                 }
             }
+            return true;
         } catch (Exception e) {
             throw new DeleteWriterFailException();
         }

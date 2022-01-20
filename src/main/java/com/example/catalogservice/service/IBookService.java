@@ -12,10 +12,10 @@ public interface IBookService {
     List<Book> getAll();
     Book getById(int id);
     Book getByIdThrowsException(int id);
-    void editInStock(EditInStock editInStock);
+    boolean editInStock(EditInStock editInStock);
     List<BookCatalogData> getByCart(CartClient cart);
     Book create(Book toCreate, List<Integer> writerIds);
     Book edit(Book toEdit, List<Integer> writerIds);
-    void delete(int bookId);
-    void removeWriter(int writerId);
+    boolean delete(int bookId);
+    boolean removeWriter(int writerId);
 }
