@@ -1,20 +1,94 @@
-insert into books (in_stock, name, recap, year_released, price) values
-(3, "Bookk", "Recapp", 1999, 30.0);
-insert into books (in_stock, name, recap, year_released, price) values
-(5, "Bookkk", "Recappp", 1998, 60.0);
+insert into books (in_stock, name, recap, year_released, price) values (5, 'Jast-Flatley', 'Praesent id massa id nisl venenatis lacinia. Aenean sit amet justo. Morbi ut odio.', 2010, 87.5);
+insert into books (in_stock, name, recap, year_released, price) values (94, 'Anderson LLC', 'Nulla tempus. Vivamus in felis eu sapien cursus vestibulum. Proin eu mi. Nulla ac enim.', 2006, 81.1);
+insert into books (in_stock, name, recap, year_released, price) values (31, 'Ryan, Goodwin and Little', 'Aliquam erat volutpat. In congue.', 1992, 15.1);
+insert into books (in_stock, name, recap, year_released, price) values (24, 'Bruen, Stiedemann and Ondricka', 'Ut tellus.', 2005, 44.5);
+insert into books (in_stock, name, recap, year_released, price) values (35, 'Trantow LLC', 'Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum.', 2002, 95.7);
+insert into books (in_stock, name, recap, year_released, price) values (73, 'Lesch-Balistreri', 'Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci.', 2005, 13.1);
+insert into books (in_stock, name, recap, year_released, price) values (3, 'Durgan-Labadie', 'Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum.', 2004, 8.7);
+insert into books (in_stock, name, recap, year_released, price) values (45, 'Balistreri LLC', 'Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum.', 2007, 89.4);
+insert into books (in_stock, name, recap, year_released, price) values (8, 'Sporer-Yundt', 'Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus. Suspendisse potenti.', 1999, 96.2);
+insert into books (in_stock, name, recap, year_released, price) values (38, 'Zulauf-Feil', 'Nullam porttitor lacus at turpis.', 2013, 96.1);
 
-insert into genres (book_id, genre) values (1, "SCI_FI");
-insert into genres (book_id, genre) values (1, "COMEDY");
-insert into genres (book_id, genre) values (2, "SCIENCE");
+insert into genres (book_id, genre) values (6, 'SCI_FI');
+insert into genres (book_id, genre) values (4, 'SCI_FI');
+insert into genres (book_id, genre) values (9, 'SCI_FI');
+insert into genres (book_id, genre) values (9, 'SCIENCE');
+insert into genres (book_id, genre) values (8, 'SCIENCE');
+insert into genres (book_id, genre) values (6, 'SCIENCE');
+insert into genres (book_id, genre) values (10, 'SCIENCE');
+insert into genres (book_id, genre) values (2, 'SCIENCE');
+insert into genres (book_id, genre) values (1, 'ROMANTIC');
+insert into genres (book_id, genre) values (6, 'ROMANTIC');
+insert into genres (book_id, genre) values (4, 'ROMANTIC');
+insert into genres (book_id, genre) values (5, 'ROMANTIC');
+insert into genres (book_id, genre) values (3, 'COMEDY');
+insert into genres (book_id, genre) values (1, 'COMEDY');
+insert into genres (book_id, genre) values (5, 'COMEDY');
+insert into genres (book_id, genre) values (8, 'COMEDY');
+insert into genres (book_id, genre) values (10, 'TRAGEDY');
+insert into genres (book_id, genre) values (8, 'TRAGEDY');
+insert into genres (book_id, genre) values (9, 'TRAGEDY');
+insert into genres (book_id, genre) values (7, 'TRAGEDY');
 
-insert into writers (biography, name, surname) values
-("Biography", "Name", "Surname");
-insert into writers (biography, name, surname) values
-("Biographyy", "Namee", "Surnamee");
 
-insert into writer_book (writer_id, book_id) values
-(1, 1);
-insert into writer_book (writer_id, book_id) values
-(2, 1);
-insert into writer_book (writer_id, book_id) values
-(1, 2);
+insert into writers (name, surname, biography) values ('Loren', 'Varah', 'In hac habitasse platea dictumst. Etiam faucibus cursus urna.');
+insert into writers (name, surname, biography) values ('Carmine', 'Burnie', 'Aliquam non mauris. Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet.');
+insert into writers (name, surname, biography) values ('Gradeigh', 'Gentry', 'Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem. Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.');
+insert into writers (name, surname, biography) values ('Phip', 'Poupard', 'Etiam vel augue. Vestibulum rutrum rutrum neque. Aenean auctor gravida sem. Praesent id massa id nisl venenatis lacinia. Aenean sit amet justo.');
+insert into writers (name, surname, biography) values ('Clyde', 'Madden', 'Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci.');
+insert into writers (name, surname, biography) values ('Hersch', 'Justun', 'Vestibulum quam sapien, varius ut, blandit non, interdum in, ante.');
+insert into writers (name, surname, biography) values ('Lowell', 'Pescott', 'Nulla justo. Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.');
+insert into writers (name, surname, biography) values ('Aindrea', 'Sails', 'Suspendisse potenti.');
+insert into writers (name, surname, biography) values ('Katti', 'Bartoleyn', 'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus. Curabitur at ipsum ac tellus semper interdum.');
+insert into writers (name, surname, biography) values ('Happy', 'Nissle', 'Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet. Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo.');
+insert into writers (name, surname, biography) values ('Clive', 'Greatrakes', 'Duis ac nibh.');
+insert into writers (name, surname, biography) values ('Culley', 'Keedy', 'Duis ac nibh. Fusce lacus purus, aliquet at, feugiat non, pretium quis, lectus.');
+insert into writers (name, surname, biography) values ('Ambrose', 'Bazire', 'Vivamus in felis eu sapien cursus vestibulum. Proin eu mi. Nulla ac enim. In tempor, turpis nec euismod scelerisque, quam turpis adipiscing lorem, vitae mattis nibh ligula nec sem. Duis aliquam convallis nunc.');
+insert into writers (name, surname, biography) values ('Doralynn', 'Durrans', 'Aenean lectus. Pellentesque eget nunc. Donec quis orci eget orci vehicula condimentum.');
+insert into writers (name, surname, biography) values ('Magdaia', 'Howbrook', 'Suspendisse potenti. Cras in purus eu magna vulputate luctus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus vestibulum sagittis sapien.');
+insert into writers (name, surname, biography) values ('Karine', 'Sisse', 'Pellentesque eget nunc.');
+insert into writers (name, surname, biography) values ('Cobbie', 'Vedenisov', 'Curabitur gravida nisi at nibh. In hac habitasse platea dictumst. Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem. Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat.');
+insert into writers (name, surname, biography) values ('Teodoro', 'Tortis', 'Curabitur convallis. Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis.');
+insert into writers (name, surname, biography) values ('Melita', 'Handslip', 'Morbi non quam nec dui luctus rutrum.');
+insert into writers (name, surname, biography) values ('Shandy', 'Perigo', 'Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem.');
+
+insert into writer_book (book_id, writer_id) values (4, 4);
+insert into writer_book (book_id, writer_id) values (1, 2);
+insert into writer_book (book_id, writer_id) values (9, 18);
+insert into writer_book (book_id, writer_id) values (4, 20);
+insert into writer_book (book_id, writer_id) values (8, 7);
+insert into writer_book (book_id, writer_id) values (7, 9);
+insert into writer_book (book_id, writer_id) values (6, 6);
+insert into writer_book (book_id, writer_id) values (9, 7);
+insert into writer_book (book_id, writer_id) values (1, 15);
+insert into writer_book (book_id, writer_id) values (4, 14);
+insert into writer_book (book_id, writer_id) values (6, 9);
+insert into writer_book (book_id, writer_id) values (5, 13);
+insert into writer_book (book_id, writer_id) values (3, 3);
+insert into writer_book (book_id, writer_id) values (7, 1);
+insert into writer_book (book_id, writer_id) values (5, 6);
+insert into writer_book (book_id, writer_id) values (4, 5);
+insert into writer_book (book_id, writer_id) values (1, 11);
+insert into writer_book (book_id, writer_id) values (3, 5);
+insert into writer_book (book_id, writer_id) values (6, 8);
+insert into writer_book (book_id, writer_id) values (1, 20);
+insert into writer_book (book_id, writer_id) values (8, 19);
+insert into writer_book (book_id, writer_id) values (4, 12);
+insert into writer_book (book_id, writer_id) values (1, 18);
+insert into writer_book (book_id, writer_id) values (7, 13);
+insert into writer_book (book_id, writer_id) values (3, 12);
+insert into writer_book (book_id, writer_id) values (7, 18);
+insert into writer_book (book_id, writer_id) values (6, 13);
+insert into writer_book (book_id, writer_id) values (6, 10);
+insert into writer_book (book_id, writer_id) values (7, 17);
+insert into writer_book (book_id, writer_id) values (6, 16);
+insert into writer_book (book_id, writer_id) values (2, 13);
+insert into writer_book (book_id, writer_id) values (10, 10);
+insert into writer_book (book_id, writer_id) values (6, 18);
+insert into writer_book (book_id, writer_id) values (2, 15);
+insert into writer_book (book_id, writer_id) values (4, 6);
+insert into writer_book (book_id, writer_id) values (4, 11);
+insert into writer_book (book_id, writer_id) values (10, 8);
+insert into writer_book (book_id, writer_id) values (6, 17);
+insert into writer_book (book_id, writer_id) values (7, 4);
+insert into writer_book (book_id, writer_id) values (3, 14);
