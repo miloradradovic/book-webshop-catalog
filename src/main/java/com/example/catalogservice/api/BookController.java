@@ -6,7 +6,6 @@ import com.example.catalogservice.feign.client.*;
 import com.example.catalogservice.mapper.BookMapper;
 import com.example.catalogservice.model.Book;
 import com.example.catalogservice.service.impl.BookService;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,7 +46,7 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> editInStock(@RequestBody @Valid EditInStockDTO editInStock) {
         bookService.editInStock(bookMapper.toEditInStock(editInStock));
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // will be called when order is being placed to get detailed book data
@@ -77,6 +76,6 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> delete(@PathVariable int bookId) {
         bookService.delete(bookId);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
