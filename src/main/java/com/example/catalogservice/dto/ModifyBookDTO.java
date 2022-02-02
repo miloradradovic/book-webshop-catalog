@@ -17,7 +17,6 @@ public class ModifyBookDTO {
     private int id;
 
     @NotBlank(message = "Name can't be blank")
-    @Pattern(regexp = "[A-Z][a-z]+", message = "Name starts with the uppercase!")
     private String name;
 
     @Min(value = 1800, message = "Year can't be less than 1800!")
