@@ -64,7 +64,7 @@ public class BookController {
         return new ResponseEntity<>(bookMapper.toBookDTO(created), HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/edit/{bookId}")
+    @PutMapping(value = "/{bookId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<BookDTO> edit(@RequestBody @Valid ModifyBookDTO bookDTO, @PathVariable int bookId) {
         bookDTO.setId(bookId);
