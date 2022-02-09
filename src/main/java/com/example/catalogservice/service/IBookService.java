@@ -17,5 +17,6 @@ public interface IBookService {
     Book create(Book toCreate, List<Integer> writerIds);
     Book edit(Book toEdit, List<Integer> writerIds);
     boolean delete(int bookId);
+    boolean delete(String bookName);
     boolean removeWriter(int writerId);
 }

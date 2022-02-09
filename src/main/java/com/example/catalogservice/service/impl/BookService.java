@@ -132,6 +132,22 @@ public class BookService implements IBookService {
         }
     }
 
+    @Override
+    public boolean delete(String bookName) {
+        Book toDelete = bookRepository.findByName(bookName);
+        if (toDelete == null) {
+            throw new BookNotFoundException();
+        }
+        Set<Writer> writers = toDelete.getWriters(); // will be checked after book is deleted
+        try {
+            bookRepository.delete(toDelete);
+            writerService.deleteWhereNoBooks(writers);
+            return true;
+        } catch (Exception e) {
+            throw new DeleteBookFailException();
+        }
+    }
+
     @Transactional
     @Override
     public boolean removeWriter(int writerId) {

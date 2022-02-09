@@ -78,4 +78,11 @@ public class BookController {
         bookService.delete(bookId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "/by-name/{name}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> delete(@PathVariable String name) {
+        bookService.delete(name);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

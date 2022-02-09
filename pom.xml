@@ -126,7 +126,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
-						<name>2504998/${project.artifactId}</name>
+						<name>comeee98/${project.artifactId}</name>
 					</image>
 					<excludes>
 						<exclude>

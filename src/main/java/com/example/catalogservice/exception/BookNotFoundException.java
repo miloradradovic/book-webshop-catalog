@@ -5,6 +5,6 @@ import com.example.catalogservice.exception.general.BadRequestException;
 public class BookNotFoundException extends BadRequestException {
 
     public BookNotFoundException() {
-        super("Book not found by id!");
+        super("Book not found!");
     }
 }
