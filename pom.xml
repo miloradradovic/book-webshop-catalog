@@ -126,7 +126,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
-						<name>comeee98/${project.artifactId}</name>
+						<name>comeee98/book-webshop-catalog</name>
 					</image>
 					<excludes>
 						<exclude>
